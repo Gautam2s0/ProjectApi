@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
 const AddUserIdInCart = (req, res, next) => {
   const token = req.headers.authorization;
   if (token) {
