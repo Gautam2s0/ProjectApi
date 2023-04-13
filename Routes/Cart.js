@@ -64,7 +64,7 @@ Cartrouter.delete("/:id", async (req, res) => {
 
 Cartrouter.get("/", AddUserIdInCart, async (req, res) => {
   const userId = req.userId;
-  var id =new mongoose.Types.ObjectId(userId);
+  var id =mongoose.Types.ObjectId(userId);
   try {
     const cart = await CartModel.aggregate([
       {
@@ -131,7 +131,14 @@ Cartrouter.get("/all", verifyTokenAndAdmin, async (req, res) => {
           as: "cart",
         },
       },
-     
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [{ $arrayElemAt: ["$cart", 0] }, "$$ROOT"],
+          },
+        },
+      },
+      
     ]);
     res.status(200).send(cart);
   } catch (err) {
@@ -154,7 +161,6 @@ Cartrouter.get("/alluser",verifyTokenAndAdmin, async (req, res) => {
       {
         $group: {
           _id: { user: "$user" },
-          // itmes: { "$addToSet": "$_id" },
           count: { $sum: 1 },
         },
       },

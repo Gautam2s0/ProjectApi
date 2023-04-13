@@ -7,6 +7,8 @@ const { mongoose } = require("mongoose");
 const OrderRouter = require("express").Router();
 
 
+//  USER SIDE
+
 //********************** CREATE   Logged User only ***************************
 
 OrderRouter.post("/add",AddUserIdInCart, async (req, res) => {
@@ -20,12 +22,28 @@ OrderRouter.post("/add",AddUserIdInCart, async (req, res) => {
   }
 });
 
+//****************************** GET USER ORDERS  --> user can access only own cart itmes **************************
 
-
-OrderRouter.get("/userorder",AddUserIdInCart, async (req, res) => {
-  // console.log(req.params.id)
+OrderRouter.get("/",AddUserIdInCart, async (req, res) => {
+  const id=new mongoose.Types.ObjectId(req.userId)
+  // console.log(req.params.id
   try {
-     const orders=await OrderModel.find({userId:req.userId})
+     const orders=await OrderModel.aggregate([
+      {
+        $match: {
+          userId: id,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      }
+    ])
     orders.length>0?res.status(200).send(orders):res.status(200).send({msg:"looks like you did't place any order so for"})
   } catch (err) {
     res.status(500).send(err);
@@ -33,7 +51,7 @@ OrderRouter.get("/userorder",AddUserIdInCart, async (req, res) => {
     
 });
 
-OrderRouter.patch("/cancel/:id", async (req, res) => {
+OrderRouter.patch("/cancel/:id",AddUserIdInCart, async (req, res) => {
   // console.log(req.params.id)
   try {
     const updatedOrder = await OrderModel.findByIdAndUpdate(
@@ -49,6 +67,9 @@ OrderRouter.patch("/cancel/:id", async (req, res) => {
   }
     
 });
+
+
+//  ADMIN SIDE
 
 // *************  UPDATE --> Only Admin has access*********************
 
@@ -71,7 +92,7 @@ OrderRouter.patch("/update/:id", verifyTokenAndAdmin, async (req, res) => {
 
 //**************************  DELETE  Only Admin has access to preform  ****************************
 
-OrderRouter.delete("delete/:id", verifyTokenAndAdmin, async (req, res) => {
+OrderRouter.delete("/delete/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     await OrderModel.findByIdAndDelete(req.params.id);
     res.status(200).send("Order has been deleted...");
@@ -80,60 +101,16 @@ OrderRouter.delete("delete/:id", verifyTokenAndAdmin, async (req, res) => {
   }
 });
 
-//****************************** GET USER ORDERS  --> user can access only own orders *************************
-
-
-//****************************** GET USER ORDERS  --> user can access only own cart itmes **************************
-
-
-OrderRouter.get("/",AddUserIdInCart ,async (req, res) => {
-  var id = mongoose.Types.ObjectId(req.userId); 
-  try {
-    const orders= await OrderModel.aggregate([
-      {
-        $match:{
-          userId:id        
-        }
-      },
-
-      {
-        $lookup:{
-          from:"products",
-          localField:"productId",
-          foreignField:"_id",
-          as:"orders",
-          
-            
-        },
-      },
-      {
-        $group:{
-          categories:"$categories",
-          title:"$title",
-          price:"$price"
-        }
-      
-      } 
-    ])
-    // const orders = await OrderModel.find({ userId: req.userId });
-   orders.length>0? res.status(200).send(orders):res.status(200).send({
-    msg:"You have nothing order so for"
-   })
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
-
-
-
 // *******************************GET ALL  (Total order)-->  Only Admin has access to preform  ****************
 
 
 OrderRouter.get("/all", verifyTokenAndAdmin, async (req, res) => {
 
   try {
-    const orders = await OrderModel.find().count();
-    res.status(200).send(orders);
+    const orders = await OrderModel.find()
+    orders.length > 0
+      ? res.status(200).send(cart)
+      : res.status(200).send("No orders placed yet");
   } catch (err) {
     res.status(500).send(err);
   }
