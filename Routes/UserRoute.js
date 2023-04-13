@@ -3,7 +3,7 @@ const { UserModel } = require("../Modals/UserModal");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { authenticate } = require("../middlewares/Auth.middleware");
+const { authenticate } = require("../Middlewares/Authmiddleware");
 const {
   sendOtp,
   verifyOtp,
