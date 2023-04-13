@@ -8,7 +8,7 @@ const ProductsRoute = require("express").Router();
 //CREATE ,  Only Admin Authorised middleware(verifyTokenAndAdmin)
 
 
-ProductsRoute.post("/add",verifyTokenAndAdmin, async (req, res) => {
+ProductsRoute.post("/",verifyTokenAndAdmin, async (req, res) => {
   try {
     // const savedProduct = await newProduct.insetmany(req.bo);
    const savedProduct=new ProductModel(req.body)
@@ -22,9 +22,7 @@ ProductsRoute.post("/add",verifyTokenAndAdmin, async (req, res) => {
 
 //UPDATE, Only Admin Authorised, middleware(verifyTokenAndAdmin)
 
-ProductsRoute.patch("/update/:id",verifyTokenAndAdmin, async (req, res) => {
-    console.log(req.body)
-    console.log(req.params.id)
+ProductsRoute.patch("/:id",verifyTokenAndAdmin, async (req, res) => {
   try {
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       req.params.id,

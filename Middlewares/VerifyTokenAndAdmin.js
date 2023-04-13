@@ -1,5 +1,5 @@
-const jwt=require("jsonwebtoken")
-const {UserModel}=require("../Modals/UserModal")
+const jwt=require("jsonwebtoken");
+const { UserModel } = require("../Modals/UserModal");
 require('dotenv').config()
 
 
@@ -10,7 +10,7 @@ const verifyTokenAndAdmin=async(req,res,next)=>{
       const decoded = jwt.verify(token, process.env.secretKEY);
       // console.log({decoded})
       if (decoded) {
-        const userID = decoded._id;
+        const userID = decoded.userID;
         const user=await UserModel.findOne({_id:userID})
         if(user.isAdmin){
           next()

@@ -7,7 +7,7 @@ const AddUserIdInCart = (req, res, next) => {
   if (token) {
     const decoded = jwt.verify(token, process.env.secretKey);
     if (decoded) {
-      const userId = decoded._id;
+      const userId = decoded.userID;
       req.userId = userId;
       next();
     } else {

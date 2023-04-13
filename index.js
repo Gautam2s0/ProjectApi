@@ -13,7 +13,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use("/cart",Cartrouter)
-app.use("/product",ProductsRoute)
+app.use("/products",ProductsRoute)
 app.use("/user",userRouter)
 app.use("/order",OrderRouter)
 
