@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
+
 const ProductSchema = new mongoose.Schema(
   {
     id:{type:Number},
     rating:{ type: Number, required: true },
-    categories: { type: String },
+    categories: { type: String},
     title: { type: String, required: true},
     price: { type: Number, required: true },
     realPrice:{ type: Number, required: true },
@@ -18,6 +19,7 @@ const ProductSchema = new mongoose.Schema(
   // Time when product was added in DB(createdAt ,updatedAt)
   { timestamps: true } 
 );
+
 const ProductModel=mongoose.model("Product", ProductSchema);
 module.exports = {
     ProductModel

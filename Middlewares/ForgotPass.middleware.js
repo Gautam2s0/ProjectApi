@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
-const { UserModel } = require("../Models/User.model");
+const { UserModel } = require("../models/User.model");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 

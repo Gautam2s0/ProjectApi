@@ -1,24 +1,30 @@
-
-const {ProductModel} = require("../Models/ProductsModel");
-const {verifyTokenAndAdmin}=require("../Middlewares/VerifyTokenAndAdmin");
-
+const {ProductModel} = require("../models/ProductsModel");
+const {verifyTokenAndAdmin}=require("../middlewares/VerifyTokenAndAdmin")
 const ProductsRoute = require("express").Router();
-
 
 //CREATE ,  Only Admin Authorised middleware(verifyTokenAndAdmin)
 
+ProductsRoute.get("/findit",async(req,res)=>{
+  // console.log(req.headers.productid)
+  try {
+    const ans=await ProductModel.findById({_id:req.headers.productid})
+    res.status(200).send(ans)
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 ProductsRoute.post("/add",verifyTokenAndAdmin, async (req, res) => {
+  // console.log(req.body)
+  const newProduct = new ProductModel(req.body);
   try {
-    // const savedProduct = await newProduct.insetmany(req.bo);
-   const savedProduct=new ProductModel(req.body)
-    await savedProduct.save()
-    res.status(200).send(savedProduct);
+    const savedProduct = await newProduct.save();
+    // await ProductModel.insertMany(req.body);
+    res.status(200).send("Products Added");
   } catch (err) {
     res.status(500).send(err);
   }
 });
-
 
 //UPDATE, Only Admin Authorised, middleware(verifyTokenAndAdmin)
 
@@ -33,7 +39,6 @@ ProductsRoute.patch("/update/:id",verifyTokenAndAdmin, async (req, res) => {
       },
       { new: true }
     );
-    
     res.status(200).send(updatedProduct);
   } catch (err) {
     res.status(500).send(err);
@@ -42,7 +47,7 @@ ProductsRoute.patch("/update/:id",verifyTokenAndAdmin, async (req, res) => {
 
 //DELETE   Only Admin Authorised, middleware(verifyTokenAndAdmin)
 
-ProductsRoute.delete("/:id",verifyTokenAndAdmin, async (req, res) => {
+ProductsRoute.delete("/delete/:id",verifyTokenAndAdmin, async (req, res) => {
   try {
     await ProductModel.findByIdAndDelete(req.params.id);
     res.status(200).send("Product has been deleted...");
@@ -54,6 +59,7 @@ ProductsRoute.delete("/:id",verifyTokenAndAdmin, async (req, res) => {
 //GET , Product by id ,Anyone can access
 
 ProductsRoute.get("/:id", async (req, res) => { 
+  console.log(req.params.id)
   try {
     const product = await ProductModel.findById(req.params.id);
     product?res.status(200).send(product):
@@ -63,29 +69,28 @@ ProductsRoute.get("/:id", async (req, res) => {
   }
 });
 
-//GET ALL ,Product, Anyone can access
+
+// GET User can access all the product data
 
 ProductsRoute.get("/", async (req, res) => {
-  let  limit=req.query.limit|| 200
-  const page=req.query.page||1
+  let  limit=req.query.limit|| 20
   let categories=req.query.categories||["shirts","jacket","coatpant","tshirts"]
   let color=req.query.color||["black","grey","white","red","blue"]
   let  order=req.query.order=="asc"?1:-1 ||1
-  let price=req.query.price||1000000
-
-  
+  let price=req.query.price||5000
+  // console.log(req.query)
   try {
-  
     // const d=await ProductModel.find({},{categories,color})
-    const d=await ProductModel.find({color:{$in:color},price:{$lte:price},categories:{$in:categories}}).sort({price:order}).limit(limit).skip(limit*(page-1))
+    const d=await ProductModel.find({color:{$in:color},price:{$lte:price},categories:{$in:categories}}).sort({price:order})
     d.length>0?res.status(200).send(d):res.status(200).send({
       data:[],
       msg:"No data present as per query"
     })
-  } catch (err) {
-    
-    res.status(500).send(err.message);
+  }
+  catch (err) {
+    res.status(500).send(err);
   }
 });
 
-module.exports = {ProductsRoute}
+
+module.exports = {ProductsRoute};
