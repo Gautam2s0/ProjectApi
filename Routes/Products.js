@@ -71,7 +71,6 @@ ProductsRoute.get("/", async (req, res) => {
   let  order=req.query.order=="asc"?1:-1 ||1
   let price=req.query.price||1000000
 
-  
   try {
   
     // const d=await ProductModel.find({},{categories,color})
