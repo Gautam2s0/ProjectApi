@@ -75,6 +75,7 @@ ProductsRoute.get("/", async (req, res) => {
   
     // const d=await ProductModel.find({},{categories,color})
     const d=await ProductModel.find({color:{$in:color},price:{$lte:price},categories:{$in:categories}}).sort({price:order}).limit(limit).skip(limit*(page-1))
+    // const d=await ProductModel.find()
     d.length>0?res.status(200).send(d):res.status(200).send({
       data:[],
       msg:"No data present as per query"
