@@ -9,7 +9,6 @@ const Cartrouter = require("express").Router();
 
 //CREATE  Only logged user middleware verifyToken,
 
-
 Cartrouter.post("/",  AddUserIdInCart,async (req, res) => {
   const userId=req.userId
   const productId=req.body.productId
@@ -51,7 +50,7 @@ Cartrouter.patch("/:id", async (req, res) => {
 
 //DELETE  Only logged user and own cart --> middleware --> verifyTokenAndAuthorization
 
-Cartrouter.delete("/:id", async (req, res) => {
+Cartrouter.delete("/:id", AddUserIdInCart , async (req, res) => {
   try {
     await CartModel.findByIdAndDelete(req.params.id);
     res.status(200).send("Cart has been deleted...");
@@ -66,6 +65,7 @@ Cartrouter.get("/", AddUserIdInCart, async (req, res) => {
   const userId =req.userId;
   var id =new mongoose.Types.ObjectId(userId);
   try {
+
     const cart=await CartModel.find({userId:id})
     .populate("productId").select("_id userId productId quantity")
     cart.length > 0
@@ -80,13 +80,14 @@ Cartrouter.get("/", AddUserIdInCart, async (req, res) => {
 
 Cartrouter.get("/all", verifyTokenAndAdmin, async (req, res) => {
   try {
-   
+
     const cart=await CartModel.find().populate("productId")
     res.status(200).send(cart);
   } catch (err) {
     res.status(500).send(err);
   }
 });
+
 
 Cartrouter.get("/alluser",verifyTokenAndAdmin, async (req, res) => {
   try {
@@ -101,3 +102,5 @@ Cartrouter.get("/alluser",verifyTokenAndAdmin, async (req, res) => {
 });
 
 module.exports = { Cartrouter };
+// 
+

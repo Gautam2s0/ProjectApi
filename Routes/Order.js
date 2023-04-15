@@ -9,15 +9,16 @@ const OrderRouter = require("express").Router();
 
 //  USER SIDE
 
+
 //********************** CREATE   Logged User only ***************************
 
 OrderRouter.post("/add",AddUserIdInCart, async (req, res) => {
     const userId=req.userId
    console.log(userId)
   try {
+
     const newOrder = new OrderModel({...req.body,userId});
     const savedOrder = await newOrder.save();
-    console.log({newOrder})
     res.status(200).send(savedOrder);
   } catch (err) {
     res.status(500).send(err);
@@ -30,23 +31,9 @@ OrderRouter.get("/",AddUserIdInCart, async (req, res) => {
   const id=new mongoose.Types.ObjectId(req.userId)
   // console.log(req.params.id
   try {
-     const orders=await OrderModel.aggregate([
-      {
-        $match: {
-          userId: id,
-        },
-      },
-
-      {
-        $lookup: {
-          from: "products",
-          localField: "productId",
-          foreignField: "_id",
-          as: "product",
-        },
-      }
-    ])
-    const order=await OrderModel.find().populate("productId")
+     
+    const orders=await OrderModel.find().populate("productId")
+    
     orders.length>0?res.status(200).send(orders):res.status(200).send({msg:"looks like you did't place any order so for"})
   } catch (err) {
     res.status(500).send(err);
