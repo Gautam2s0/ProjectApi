@@ -51,7 +51,7 @@ Cartrouter.patch("/:id", async (req, res) => {
 
 //DELETE  Only logged user and own cart --> middleware --> verifyTokenAndAuthorization
 
-Cartrouter.delete("/:id", async (req, res) => {
+Cartrouter.delete("/:id", AddUserIdInCart , async (req, res) => {
   try {
     await CartModel.findByIdAndDelete(req.params.id);
     res.status(200).send("Cart has been deleted...");
@@ -66,50 +66,7 @@ Cartrouter.get("/", AddUserIdInCart, async (req, res) => {
   const userId = req.userId;
   var id =mongoose.Types.ObjectId(userId);
   try {
-    const cart = await CartModel.aggregate([
-      {
-        $match: {
-          userId: id,
-        },
-      },
-
-      {
-        $lookup: {
-          from: "products",
-          localField: "productId",
-          foreignField: "_id",
-          as: "cart",
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: [{ $arrayElemAt: ["$cart", 0] }, "$$ROOT"],
-          },
-        },
-      },
-      { $project: { cart: 0 } },
-      // {
-      //   $group: {
-      //     _id: {
-      //       _id:"$_id",
-      //       categories: "$categories",
-      //       rating: "$rating",
-      //       title: "$title",
-      //       price: "$price",
-      //       realPrice: "$realPrice",
-      //       brand: "$brand",
-      //       description: "$description",
-      //       color: "$color",
-      //       discount: "$discount",
-      //       Images: "$Images",
-      //       mainImage: "$mainImage",
-      //       quantity: "$quantity",
-      //     },
-      //   },
-      // },
-    ]);
-
+    const cart = await CartModel.find({userId:id})
     cart.length > 0
       ? res.status(200).send(cart)
       : res.status(200).send("No items in your cart");
@@ -122,60 +79,39 @@ Cartrouter.get("/", AddUserIdInCart, async (req, res) => {
 
 Cartrouter.get("/all", verifyTokenAndAdmin, async (req, res) => {
   try {
-    const cart = await CartModel.aggregate([
-      {
-        $lookup: {
-          from: "products",
-          localField: "productId",
-          foreignField: "_id",
-          as: "cart",
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: [{ $arrayElemAt: ["$cart", 0] }, "$$ROOT"],
-          },
-        },
-      },
-      
-    ]);
+    const cart = await CartModel.find()
     res.status(200).send(cart);
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-Cartrouter.get("/alluser",verifyTokenAndAdmin, async (req, res) => {
-  try {
-    const allcart = await CartModel.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
+// Cartrouter.get("/alluser",verifyTokenAndAdmin, async (req, res) => {
+//   try {
+//     const allcart = await CartModel.aggregate([
+//       {
+//         $lookup: {
+//           from: "users",
+//           localField: "userId",
+//           foreignField: "_id",
+//           as: "user",
+//         },
+//       },
 
-      {
-        $group: {
-          _id: { user: "$user" },
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-    allcart.length > 0
-      ? res.status(200).send(allcart)
-      : res.status(200).send("Nobody user have items in own cart");
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
-module.exports = { Cartrouter };
-
-
+//       {
+//         $group: {
+//           _id: { user: "$user" },
+//           count: { $sum: 1 },
+//         },
+//       },
+//     ]);
+//     allcart.length > 0
+//       ? res.status(200).send(allcart)
+//       : res.status(200).send("Nobody user have items in own cart");
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// });
 
 
 module.exports = {Cartrouter};

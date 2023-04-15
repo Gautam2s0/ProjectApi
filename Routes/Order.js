@@ -15,7 +15,7 @@ OrderRouter.post("/add",AddUserIdInCart, async (req, res) => {
     const userId=req.userId
   const newOrder = new OrderModel({...req.body,userId});
   try {
-    const savedOrder = await newOrder.save();
+    const savedOrder = await OrderModel.insertMany({...req.body , userId});
     res.status(200).send(savedOrder);
   } catch (err) {
     res.status(500).send(err);
@@ -28,22 +28,7 @@ OrderRouter.get("/",AddUserIdInCart, async (req, res) => {
   const id=new mongoose.Types.ObjectId(req.userId)
   // console.log(req.params.id
   try {
-     const orders=await OrderModel.aggregate([
-      {
-        $match: {
-          userId: id,
-        },
-      },
-
-      {
-        $lookup: {
-          from: "products",
-          localField: "productId",
-          foreignField: "_id",
-          as: "product",
-        },
-      }
-    ])
+     const orders=await OrderModel.find({userId:id})
     orders.length>0?res.status(200).send(orders):res.status(200).send({msg:"looks like you did't place any order so for"})
   } catch (err) {
     res.status(500).send(err);

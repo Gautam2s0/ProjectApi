@@ -4,10 +4,15 @@ const OrderSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.ObjectId, required: true },
     productId: {type:mongoose.Schema.ObjectId},
-    quantity: {
-          type: Number,
-          default: 1,
-    },
+
+    quantity: 1 ,
+    rating:{ type: Number, required: true },
+    categories: { type: String },
+    title: { type: String},
+    price: { type: Number},
+    realPrice:{ type: Number},
+    mainImage:{type:String} ,
+
     amount: { type: Number, required: true },
     address: { type: Object, required: true },
     status: { type: String, default: "pending" },
