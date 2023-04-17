@@ -13,6 +13,18 @@ const {
 const userRouter = express.Router();
 
 
+// for admin
+
+userRouter.get("/allUser" , async(req, res)=>{
+  try{
+  const allData = await UserModel.find()
+  res.send(allData)
+  }
+  catch(err){
+    res.status(500).send(err);
+  }
+})
+
 //register router
 userRouter.post("/register", async (req, res) => {
   const { name, email, password,gender } = req.body;
