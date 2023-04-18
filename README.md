@@ -1,11 +1,12 @@
 # ProjectApi
-This is the photos of the fashion gallary website. Fashion Gallary is an online Ecommerce Website which is providing high quality products. From this website, users can Order
+This is the api for Fashion Gallary Project.
+Fashion Gallery is a premier online destination for men's fashion, featuring a carefully curated selection of clothing, shoes, and accessories from top brands.
 
-**To see  click the below link.**
+**To see  click the below Api link.**
 
 https://cute-pear-salmon-yoke.cyclic.app/
 
-Mens products.
+
 #  This is backend project for Fashion Gallary
 Tech Stack 
 1. Expressjs,
