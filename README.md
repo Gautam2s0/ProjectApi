@@ -6,6 +6,10 @@ Fashion Gallery is a premier online destination for men's fashion, featuring a c
 
 https://cute-pear-salmon-yoke.cyclic.app/
 
+**To see the live site click the below link.**
+
+https://fashion-gallery.vercel.app/
+
 
 #  This is backend project for Fashion Gallary
 Tech Stack 
